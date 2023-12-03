@@ -11,21 +11,23 @@
     <div class="mainContainer">
       <h1 class="title">TIC TAC TOE</h1>
       <div class="palyerInfo">
-        <label for="name">Enter Your Name</label>
+        <p>Enter Your Name</p>
         <input type="text" name="name" id="name" />
-        <button onclick="submitName()">Submit</button>
+        <button class="button" onclick="submitName()">Submit</button>
       </div>
       <div class="playWithOthers">
-        <h2>Play With Others</h2>
+        <h2 class="title2">Play With Others</h2>
         <div class="keyInfo">
           <p>Share your key: <span id="randomKey"></span></p>
           <p>OR</p>
-          <div class="enterKey">
+          <div class="">
             <p>Enter key:</p>
             <input type="text" id="key" />
           </div>
+          <button class="button" id="serachButton" onclick="search()">
+            Search
+          </button>
         </div>
-        <button id="serachButton" onclick="search()">Search</button>
       </div>
     </div>
     <div class="playersData">
@@ -60,6 +62,7 @@
       const socket = io();
       const key = Math.floor(Math.random() * 1000000);
       var name;
+      var oppId;
       function submitName() {
         name = document.getElementById("name").value;
         if (!name) {
@@ -94,6 +97,7 @@
         }
       }
       socket.on("found", (res) => {
+        oppId = res.opponentId;
         document.getElementsByClassName("palyerInfo")[0].style.display = "none";
         document.getElementsByClassName("playWithOthers")[0].style.display =
           "none";
@@ -125,6 +129,7 @@
             name: name,
             btn: btnClass,
             sign: document.getElementById("turn").innerText,
+            opponentId: oppId,
           });
         } else alert("Opponents Turn!!");
       }
@@ -194,6 +199,9 @@
           return "draw";
         }
       }
+      socket.on("error", () => {
+        alert("Id Not Found");
+      });
     </script>
   </body>
 </html>

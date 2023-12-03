@@ -27,7 +27,6 @@ io.on("connection", (socket) => {
       players.push(res);
     }
     flag = true;
-    // console.log(players);
     var skey;
     players.forEach((item, id) => {
       if (item.searchKey) {
@@ -36,13 +35,21 @@ io.on("connection", (socket) => {
         players.splice(id, 1);
       }
       if (skey) {
+        let skeyFound = true;
         players.forEach((player, index) => {
           if (player.key == skey) {
             twoPlayers.push(player);
             players.splice(index, 1);
             skey = "";
+            skeyFound = false;
           }
         });
+        if (skeyFound) {
+          socket.emit("error", {});
+          twoPlayers = [];
+          skey = "";
+          skeyFound = true;
+        }
       }
       if (twoPlayers.length == 2) {
         if (twoPlayers[0].searchKey || twoPlayers[1].searchKey) {
@@ -58,6 +65,7 @@ io.on("connection", (socket) => {
                 p2: twoPlayers[1].name,
                 p2Sign: "X",
                 p2Key: twoPlayers[1].key,
+                opponentId: twoPlayers[0].id,
               });
             });
             socket.emit("found", {
@@ -67,39 +75,13 @@ io.on("connection", (socket) => {
               p2: twoPlayers[1].name,
               p2Sign: "X",
               p2Key: twoPlayers[1].key,
+              opponentId: twoPlayers[1].id,
             });
-            twoPlayers = [];
           }
         }
       }
+      twoPlayers = [];
     });
-    console.log(twoPlayers);
-    // if (players.length == 2) {
-    //   if (players[0].searchKey || players[1].searchKey) {
-    //     if (
-    //       players[0].searchKey == players[1].key ||
-    //       players[1].searchKey == players[0].key
-    //     ) {
-    //       socket.broadcast.emit("found", {
-    //         p1: players[0].name,
-    //         p1Sign: "O",
-    //         p1Key: players[0].key,
-    //         p2: players[1].name,
-    //         p2Sign: "X",
-    //         p2Key: players[1].key,
-    //       });
-    //       socket.emit("found", {
-    //         p1: players[0].name,
-    //         p1Sign: "O",
-    //         p1Key: players[0].key,
-    //         p2: players[1].name,
-    //         p2Sign: "X",
-    //         p2Key: players[1].key,
-    //       });
-    //       players = [];
-    //     }
-    //   }
-    // }
   });
   socket.on("btnclick", (res) => {
     if (res.sign == "O") {
@@ -109,7 +91,7 @@ io.on("connection", (socket) => {
         btn: res.btn,
         name: res.name,
       });
-      socket.broadcast.emit("changeturn", {
+      socket.to(res.opponentId).emit("changeturn", {
         name: res.name,
         turn: "X",
         sign: "O",
@@ -122,7 +104,7 @@ io.on("connection", (socket) => {
         btn: res.btn,
         name: res.name,
       });
-      socket.broadcast.emit("changeturn", {
+      socket.to(res.opponentId).emit("changeturn", {
         turn: "O",
         sign: "X",
         btn: res.btn,
