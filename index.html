@@ -30,29 +30,29 @@
     </div>
     <div class="playersData">
       <div>
-        <p>You are: <span></span></p>
+        <p>You are: <span id="sign"></span></p>
       </div>
       <div class="playersInfo">
-        <p>You:<span></span></p>
-        <p>Turn:<span></span></p>
-        <p>Opponent:<span></span></p>
+        <p>You:<span id="p1name"></span></p>
+        <p>Turn:<span id="turn"></span></p>
+        <p>Opponent:<span id="p2name"></span></p>
       </div>
     </div>
     <div class="gameconatiner">
       <div class="gameRow">
-        <button class="btn1 btn"></button>
-        <button class="btn2 btn"></button>
-        <button class="btn3 btn"></button>
+        <button class="btn1" id="btn" onclick="btnClick('btn1')"></button>
+        <button class="btn2" id="btn" onclick="btnClick('btn2')"></button>
+        <button class="btn3" id="btn" onclick="btnClick('btn3')"></button>
       </div>
       <div class="gameRow">
-        <button class="btn4 btn"></button>
-        <button class="btn5 btn"></button>
-        <button class="btn6 btn"></button>
+        <button class="btn4" id="btn" onclick="btnClick('btn4')"></button>
+        <button class="btn5" id="btn" onclick="btnClick('btn5')"></button>
+        <button class="btn6" id="btn" onclick="btnClick('btn6')"></button>
       </div>
       <div class="gameRow">
-        <button class="btn7 btn"></button>
-        <button class="btn8 btn"></button>
-        <button class="btn9 btn"></button>
+        <button class="btn7" id="btn" onclick="btnClick('btn7')"></button>
+        <button class="btn8" id="btn" onclick="btnClick('btn8')"></button>
+        <button class="btn9" id="btn" onclick="btnClick('btn9')"></button>
       </div>
     </div>
 
@@ -71,6 +71,7 @@
           socket.emit("uniqueKey", {
             key: key,
             name: name,
+            id: socket.id,
           });
           document.getElementsByClassName("playWithOthers")[0].style.display =
             "block";
@@ -88,7 +89,109 @@
             key: key,
             name: name,
             searchKey: searchKey,
+            id: socket.id,
           });
+        }
+      }
+      socket.on("found", (res) => {
+        document.getElementsByClassName("palyerInfo")[0].style.display = "none";
+        document.getElementsByClassName("playWithOthers")[0].style.display =
+          "none";
+        document.getElementsByClassName("gameconatiner")[0].style.display =
+          "block";
+        document.getElementsByClassName("playersData")[0].style.display =
+          "block";
+        if (key == res.p1Key) {
+          document.getElementById("sign").innerText = res.p1Sign;
+          document.getElementById("p1name").innerText = res.p1;
+          document.getElementById("p2name").innerText = res.p2;
+          document.getElementById("turn").innerText = res.p1Sign;
+        } else {
+          document.getElementById("sign").innerText = res.p2Sign;
+          document.getElementById("p1name").innerText = res.p2;
+          document.getElementById("p2name").innerText = res.p1;
+          document.getElementById("turn").innerText = res.p1Sign;
+        }
+      });
+      function btnClick(btnClass) {
+        if (
+          document.getElementById("sign").innerText ==
+          document.getElementById("turn").innerText
+        ) {
+          document.getElementsByClassName(btnClass)[0].innerText =
+            document.getElementById("turn").innerText;
+          document.getElementsByClassName(btnClass)[0].disabled = true;
+          socket.emit("btnclick", {
+            name: name,
+            btn: btnClass,
+            sign: document.getElementById("turn").innerText,
+          });
+        } else alert("Opponents Turn!!");
+      }
+      socket.on("changeturn", (res) => {
+        document.getElementsByClassName(res.btn)[0].innerText = res.sign;
+        document.getElementsByClassName(res.btn)[0].disabled = true;
+        document.getElementById("turn").innerText = res.turn;
+        setTimeout(() => {
+          let win = checkWin();
+          if (win === true) {
+            alert(`${res.name} Wins`);
+            window.location.reload();
+          } else if (win === "draw") {
+            alert("Draw");
+            window.location.reload();
+          }
+        }, 500);
+      });
+      function checkWin() {
+        let btn1 = document.getElementsByClassName("btn1")[0].innerText;
+        let btn2 = document.getElementsByClassName("btn2")[0].innerText;
+        let btn3 = document.getElementsByClassName("btn3")[0].innerText;
+        let btn4 = document.getElementsByClassName("btn4")[0].innerText;
+        let btn5 = document.getElementsByClassName("btn5")[0].innerText;
+        let btn6 = document.getElementsByClassName("btn6")[0].innerText;
+        let btn7 = document.getElementsByClassName("btn7")[0].innerText;
+        let btn8 = document.getElementsByClassName("btn8")[0].innerText;
+        let btn9 = document.getElementsByClassName("btn9")[0].innerText;
+        if (
+          ((btn1 !== "" || btn2 != "" || btn3 != "") &&
+            btn1 == btn2 &&
+            btn2 == btn3) ||
+          ((btn4 !== "" || btn5 != "" || btn6 != "") &&
+            btn4 == btn5 &&
+            btn5 == btn6) ||
+          ((btn7 !== "" || btn8 != "" || btn9 != "") &&
+            btn7 == btn8 &&
+            btn8 == btn9) ||
+          ((btn1 !== "" || btn4 != "" || btn7 != "") &&
+            btn1 == btn4 &&
+            btn4 == btn7) ||
+          ((btn2 !== "" || btn5 != "" || btn8 != "") &&
+            btn2 == btn5 &&
+            btn5 == btn8) ||
+          ((btn3 !== "" || btn6 != "" || btn9 != "") &&
+            btn3 == btn6 &&
+            btn6 == btn9) ||
+          ((btn1 !== "" || btn5 != "" || btn9 != "") &&
+            btn1 == btn5 &&
+            btn5 == btn9) ||
+          ((btn3 !== "" || btn5 != "" || btn7 != "") &&
+            btn3 == btn5 &&
+            btn5 == btn7)
+        ) {
+          return true;
+        } else if (
+          btn1 != "" &&
+          btn2 != "" &&
+          btn3 != "" &&
+          btn4 != "" &&
+          btn5 != "" &&
+          btn6 != "" &&
+          btn7 != "" &&
+          btn8 != "" &&
+          btn9 != ""
+        ) {
+          return "draw";
         }
       }
     </script>

@@ -23,7 +23,7 @@
 .gameconatiner {
   display: none;
 }
-.btn {
+#btn {
   height: 10vh;
   width: 10%;
 }
