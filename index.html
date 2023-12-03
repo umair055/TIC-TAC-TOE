@@ -1,12 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TIC TAC TOE</title>
-    <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-    
-</body>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <div class="mainContainer">
+      <h1 class="title">TIC TAC TOE</h1>
+      <div class="palyerInfo">
+        <label for="name">Enter Your Name</label>
+        <input type="text" name="name" id="name" />
+        <button onclick="submitName()">Submit</button>
+      </div>
+      <div class="playWithOthers">
+        <h2>Play With Others</h2>
+        <div class="keyInfo">
+          <p>Share your key: <span id="randomKey"></span></p>
+          <p>OR</p>
+          <div class="enterKey">
+            <p>Enter key:</p>
+            <input type="text" id="key" />
+          </div>
+        </div>
+        <button id="serachButton" onclick="search()">Search</button>
+      </div>
+    </div>
+    <div class="playersData">
+      <div>
+        <p>You are: <span></span></p>
+      </div>
+      <div class="playersInfo">
+        <p>You:<span></span></p>
+        <p>Turn:<span></span></p>
+        <p>Opponent:<span></span></p>
+      </div>
+    </div>
+    <div class="gameconatiner">
+      <div class="gameRow">
+        <button class="btn1 btn"></button>
+        <button class="btn2 btn"></button>
+        <button class="btn3 btn"></button>
+      </div>
+      <div class="gameRow">
+        <button class="btn4 btn"></button>
+        <button class="btn5 btn"></button>
+        <button class="btn6 btn"></button>
+      </div>
+      <div class="gameRow">
+        <button class="btn7 btn"></button>
+        <button class="btn8 btn"></button>
+        <button class="btn9 btn"></button>
+      </div>
+    </div>
+
+    <script>
+      const socket = io();
+      const key = Math.floor(Math.random() * 1000000);
+      var name;
+      function submitName() {
+        name = document.getElementById("name").value;
+        if (!name) {
+          document.getElementsByClassName("playWithOthers")[0].style.display =
+            "none";
+          alert("Enter Name");
+        } else {
+          document.getElementById("randomKey").innerText = key;
+          socket.emit("uniqueKey", {
+            key: key,
+            name: name,
+          });
+          document.getElementsByClassName("playWithOthers")[0].style.display =
+            "block";
+        }
+      }
+      function search() {
+        let searchKey = document.getElementById("key").value;
+
+        if (!searchKey) {
+          document.getElementsByClassName("playersData")[0].style.display =
+            "none";
+          alert("Enter Key!!!");
+        } else {
+          socket.emit("uniqueKey", {
+            key: key,
+            name: name,
+            searchKey: searchKey,
+          });
+        }
+      }
+    </script>
+  </body>
 </html>

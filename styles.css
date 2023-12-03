@@ -1,0 +1,29 @@
+.keyInfo {
+  display: flex;
+  justify-content: space-between;
+}
+.enterKey {
+  display: flex;
+}
+.playersData {
+  display: none;
+}
+.playWithOthers {
+  display: none;
+}
+.playersInfo {
+  display: flex;
+  justify-content: space-between;
+}
+.gameRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gameconatiner {
+  display: none;
+}
+.btn {
+  height: 10vh;
+  width: 10%;
+}

@@ -12,3 +12,13 @@ app.get("/", (req, res) => {
 server.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
+io.on("connection", (socket) => {
+  socket.on("uniqueKey", (res) => {
+    console.log(res);
+    if (res.searchKey) {
+      if (res.searchKey !== res.key) {
+      }
+    } else {
+    }
+  });
+});
